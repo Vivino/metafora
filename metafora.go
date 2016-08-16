@@ -233,6 +233,7 @@ func (c *Consumer) close() {
 	default:
 		Debug("Stopping Run loop")
 		close(c.stop)
+		c.coord.Close()
 	}
 }
 
