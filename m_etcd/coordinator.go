@@ -269,9 +269,6 @@ func (ec *EtcdCoordinator) refreshBy(c *etcd.Client, deadline time.Time) (err er
 		default:
 		}
 
-		// FIXME
-		return errors.New("lalala")
-
 		_, err = c.UpdateDir(ec.nodePath, ec.conf.NodeTTL)
 		if err == nil {
 			// It worked!
