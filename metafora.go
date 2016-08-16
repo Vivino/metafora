@@ -38,6 +38,7 @@ type Consumer struct {
 	im       *ignoremgr
 	stop     chan struct{} // closed by Shutdown to cause Run to exit
 	tasks    chan Task     // channel for watcher to send tasks to main loop
+	errors   chan error
 
 	// Set by command handler, read anywhere via Consumer.frozen()
 	freezeL sync.Mutex
@@ -54,6 +55,7 @@ func NewConsumer(coord Coordinator, h HandlerFunc, b Balancer, balEvery time.Dur
 		coord:    coord,
 		stop:     make(chan struct{}),
 		tasks:    make(chan Task),
+		errors:   make(chan error, 100),
 	}
 	c.im = ignorer(c.tasks, c.stop)
 
@@ -104,6 +106,13 @@ func (c *Consumer) Run() {
 		}
 	}()
 
+	// Copy coordinator errors to consumers main channel.
+	go func() {
+		for {
+			c.errors <- <-c.coord.Errors()
+		}
+	}()
+
 	// Watch for new tasks in a goroutine
 	go c.watcher()
 
@@ -114,6 +123,7 @@ func (c *Consumer) Run() {
 			cmd, err := c.coord.Command()
 			if err != nil {
 				Errorf("Exiting because coordinator returned an error during command: %v", err)
+				c.errors <- err
 				return
 			}
 			if cmd == nil {
@@ -183,6 +193,11 @@ func (c *Consumer) Run() {
 	}
 }
 
+// Errors returns a channel with runtime errors.
+func (c *Consumer) Errors() <-chan error {
+	return c.errors
+}
+
 func (c *Consumer) watcher() {
 	// The watcher dying unexpectedly should close the consumer to cause a
 	// shutdown.
@@ -218,6 +233,7 @@ func (c *Consumer) close() {
 	default:
 		Debug("Stopping Run loop")
 		close(c.stop)
+		c.coord.Close()
 	}
 }
 
