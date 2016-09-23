@@ -47,7 +47,7 @@ func TestSleepTest(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Error creating new etcd stack: %v", err)
 		}
-		cons, err := metafora.NewConsumer(coord, hf, bal)
+		cons, err := metafora.NewConsumer(coord, hf, bal, 10*time.Minute)
 		if err != nil {
 			t.Fatalf("Error creating consumer %s:%s: %v", ns, name, err)
 		}
@@ -151,7 +151,7 @@ func TestAll(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Error creating new etcd stack: %v", err)
 		}
-		cons, err := metafora.NewConsumer(coord, hf, bal)
+		cons, err := metafora.NewConsumer(coord, hf, bal, 10*time.Minute)
 		if err != nil {
 			t.Fatalf("Error creating consumer %s:%s: %v", ns, name, err)
 		}

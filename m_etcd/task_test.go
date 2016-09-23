@@ -69,7 +69,7 @@ func TestAltTask(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	consumer, err := metafora.NewConsumer(coord, hf, bal)
+	consumer, err := metafora.NewConsumer(coord, hf, bal, 10*time.Minute)
 	if err != nil {
 		t.Fatal(err)
 	}

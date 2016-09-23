@@ -90,7 +90,7 @@ func (ec *EtcdCoordinator) closed() bool {
 //  conf := m_etcd.NewConfig("work", hosts)
 //	coord, hf, bal, err := m_etcd.New(conf, customHandler)
 //	if err != nil { /* ...exit... */ }
-//	consumer, err := metafora.NewConsumer(coord, hf, bal)
+//	consumer, err := metafora.NewConsumer(coord, hf, bal, 10*time.Minute)
 //
 func New(conf *Config, h statemachine.StatefulHandler) (
 	metafora.Coordinator, metafora.HandlerFunc, metafora.Balancer, error) {

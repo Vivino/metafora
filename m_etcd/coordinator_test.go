@@ -336,7 +336,7 @@ func TestNodeRefresher(t *testing.T) {
 	}
 
 	hf := metafora.HandlerFunc(nil) // we won't be handling any tasks
-	consumer, err := metafora.NewConsumer(coord, hf, metafora.DumbBalancer)
+	consumer, err := metafora.NewConsumer(coord, hf, metafora.DumbBalancer, 10*time.Minute)
 	if err != nil {
 		t.Fatalf("Error creating consumer: %+v", err)
 	}
@@ -406,7 +406,7 @@ func TestExpiration(t *testing.T) {
 		<-stop
 		return true
 	}))
-	consumer, err := metafora.NewConsumer(coord, hf, metafora.DumbBalancer)
+	consumer, err := metafora.NewConsumer(coord, hf, metafora.DumbBalancer, 10*time.Minute)
 	if err != nil {
 		t.Fatalf("Error creating consumer: %+v", err)
 	}

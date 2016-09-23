@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/coreos/go-etcd/etcd"
 	"github.com/lytics/metafora"
@@ -63,7 +64,7 @@ func main() {
 	}
 
 	bal := m_etcd.NewFairBalancer(conf)
-	c, err := metafora.NewConsumer(ec, hfunc, bal)
+	c, err := metafora.NewConsumer(ec, hfunc, bal, 10*time.Minute)
 	if err != nil {
 		metafora.Errorf("Error creating consumer: %v", err)
 		os.Exit(2)

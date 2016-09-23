@@ -39,7 +39,7 @@ func TestDoubleRelease(t *testing.T) {
 	tc := NewTestCoord()
 
 	b := &releaseAllBalancer{}
-	c, err := NewConsumer(tc, h, b)
+	c, err := NewConsumer(tc, h, b, 10*time.Minute)
 	if err != nil {
 		t.Fatalf("Error creating consumer: %v", err)
 	}
