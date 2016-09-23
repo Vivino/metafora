@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/coreos/go-etcd/etcd"
@@ -70,6 +71,8 @@ type EtcdCoordinator struct {
 
 	// Close() closes stop channel to signal to watchers to exit
 	stop chan bool
+	// Close() uses stopLock to prevent closing the stop channel twice.
+	stopLock sync.Mutex
 }
 
 func (ec *EtcdCoordinator) closed() bool {
@@ -506,6 +509,9 @@ func (ec *EtcdCoordinator) parseCommand(c *etcd.Client, resp *etcd.Response) met
 // Close stops the coordinator and causes blocking Watch and Command methods to
 // return zero values. It does not release tasks.
 func (ec *EtcdCoordinator) Close() {
+	ec.stopLock.Lock()
+	defer ec.stopLock.Unlock()
+
 	// Gracefully handle multiple close calls mostly to ease testing. This block
 	// isn't threadsafe, so you shouldn't try to call Close() concurrently.
 	select {
