@@ -89,6 +89,19 @@ func TestFairBalanceNothing(t *testing.T) {
 
 }
 
+func TestFairBalancerDesiredCount(t *testing.T) {
+	b := &FairBalancer{releaseThreshold: defaultThreshold}
+
+	state := map[string]int{
+		"a": 2,
+		"b": 0,
+		"c": 0,
+	}
+	if num := b.desiredCount(state); num < 1 {
+		t.Errorf("Expected desiredCount to return at least 1, got %d", num)
+	}
+}
+
 type testTask struct {
 	id string
 }
