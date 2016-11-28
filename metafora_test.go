@@ -65,7 +65,7 @@ func TestConsumer(t *testing.T) {
 	hf, tasksRun := newTestHandlerFunc(t)
 
 	// Create the consumer and run it
-	c, _ := NewConsumer(tc, hf, DumbBalancer)
+	c, _ := NewConsumer(tc, hf, DumbBalancer, 10*time.Minute)
 	s := make(chan int)
 	go func() {
 		c.Run()
@@ -146,7 +146,7 @@ func TestBalancer(t *testing.T) {
 	hf, tasksRun := newTestHandlerFunc(t)
 	tc := NewTestCoord()
 	balDone := make(chan struct{})
-	c, _ := NewConsumer(tc, hf, &testBalancer{t: t, done: balDone})
+	c, _ := NewConsumer(tc, hf, &testBalancer{t: t, done: balDone}, 10*time.Minute)
 	c.balEvery = 0
 	go c.Run()
 	tc.Tasks <- testTask{"test1"}
@@ -199,7 +199,7 @@ func (noopHandler) Stop()     {}
 func TestHandleTask(t *testing.T) {
 	hf := func(Task) Handler { return noopHandler{} }
 	coord := NewTestCoord()
-	c, _ := NewConsumer(coord, hf, DumbBalancer)
+	c, _ := NewConsumer(coord, hf, DumbBalancer, 10*time.Minute)
 	go c.Run()
 	coord.Tasks <- testTask{"task1"}
 	select {
@@ -219,7 +219,7 @@ func TestTaskPanic(t *testing.T) {
 		panic("TestTaskPanic")
 	})
 	coord := NewTestCoord()
-	c, _ := NewConsumer(coord, hf, DumbBalancer)
+	c, _ := NewConsumer(coord, hf, DumbBalancer, 10*time.Minute)
 	go c.Run()
 	coord.Tasks <- testTask{"1"}
 	coord.Tasks <- testTask{"2"}
@@ -245,7 +245,7 @@ func TestShutdown(t *testing.T) {
 		return false
 	})
 	coord := NewTestCoord()
-	c, _ := NewConsumer(coord, hf, DumbBalancer)
+	c, _ := NewConsumer(coord, hf, DumbBalancer, 10*time.Minute)
 	go c.Run()
 	coord.Tasks <- testTask{"1"}
 	coord.Tasks <- testTask{"2"}

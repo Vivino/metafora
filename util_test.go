@@ -36,10 +36,13 @@ func NewTestCoord() *TestCoord {
 
 func (*TestCoord) Init(CoordinatorContext) error { return nil }
 func (*TestCoord) Claim(Task) bool               { return true }
-func (c *TestCoord) Close()                      { close(c.closed) }
-func (c *TestCoord) Release(task Task)           { c.Releases <- task }
-func (c *TestCoord) Done(task Task)              { c.Dones <- task }
-func (c *TestCoord) Name() string                { return c.name }
+func (c *TestCoord) Close() {
+	defer func() { recover() }()
+	close(c.closed)
+}
+func (c *TestCoord) Release(task Task) { c.Releases <- task }
+func (c *TestCoord) Done(task Task)    { c.Dones <- task }
+func (c *TestCoord) Name() string      { return c.name }
 
 // Watch sends tasks from the Tasks channel unless an empty string is sent.
 // Then an error is returned.
@@ -72,4 +75,8 @@ func (c *TestCoord) Command() (Command, error) {
 		return cmd, errors.New("test error")
 	}
 	return cmd, nil
+}
+
+func (c *TestCoord) Errors() <-chan error {
+	return nil
 }
