@@ -32,7 +32,7 @@ func (c *tc) Name() string { return "tc" }
 func TestMakeInfoHandler(t *testing.T) {
 	t.Parallel()
 
-	c, _ := metafora.NewConsumer(&tc{stop: make(chan bool)}, nil, metafora.DumbBalancer)
+	c, _ := metafora.NewConsumer(&tc{stop: make(chan bool)}, nil, metafora.DumbBalancer, 10*time.Minute)
 	defer c.Shutdown()
 	now := time.Now().Truncate(time.Second)
 
